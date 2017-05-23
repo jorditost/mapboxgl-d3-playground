@@ -1,0 +1,122 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Treptower Park"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.470268249511719,
+          52.489261333143126
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Tempelhofer Feld"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.40280532836914,
+          52.474311525275674
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Volskpark Friedrichshain"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.432846069335938,
+          52.527605775532116
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Großer Tiergarten"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.356628417968748,
+          52.51507176398948
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Park am Gleisdreieck"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.376026153564451,
+          52.49605502101946
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Volskpark Humboldthain"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.383750915527344,
+          52.54566934855766
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Görlitzer Park"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.435592651367188,
+          52.4976226461021
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Volkspark Prenzlazer Berg"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.46323013305664,
+          52.53700393747574
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Tierpark Berlin"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.528633117675781,
+          52.50347461927098
+        ]
+      }
+    }
+  ]
+}

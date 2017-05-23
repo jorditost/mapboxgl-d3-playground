@@ -1,0 +1,245 @@
+<!DOCTYPE html >
+<html>
+  <head>
+      <meta charset='utf-8' />
+      <title>mapboxgl.js + d3.js tutorial - 05</title>
+      <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+      <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.21.0/mapbox-gl.css' rel='stylesheet' />
+      <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.21.0/mapbox-gl.js'></script>
+      <script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.4.6/d3.min.js' charset="utf-8"></script>
+
+      <style media="screen">
+          body { margin:0; padding:0; }
+          #map { position:absolute; top:0; bottom:0; width:100%; }
+
+          svg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+          }
+
+          circle {
+              fill: #e55e5e;
+              stroke: #e55e5e;
+              stroke-width: 0;
+              cursor: pointer;
+              transition: 0.5s fill, 0.5s stroke-width;
+          }
+          circle:hover {
+              fill: #5e5ee5;
+              stroke-width: 18;
+          }
+
+          #toggle-view {
+              position: fixed;
+              left: 0px;
+              top: 50%;
+              margin-top: -50px;
+              z-index: 9;
+
+              border: none;
+              appearance: none;
+              cursor: pointer;
+
+              display: block;
+              width: 100px;
+              height: 100px;
+              outline: none;
+              /*border-radius: 50%;*/
+
+              font: 18px/1.3 Arial;
+              font-weight: bold;
+              background-color: #33839c;
+              color: white;
+
+              transition: 0.5s all;
+          }
+
+          #toggle-view:hover {
+              background-color: #3b9bb9;
+          }
+
+      </style>
+  </head>
+  <body>
+    <button id="toggle-view" name="toggle-view" onclick="toggleViews()">Toggle View</button>
+    <div id="map">
+    </div>
+    <script>
+
+        var view = "map";
+
+        //////////////////
+        // Mapbox stuff
+        //////////////////
+
+        // Set-up map
+    	mapboxgl.accessToken = 'pk.eyJ1Ijoiam9yZGl0b3N0IiwiYSI6ImQtcVkyclEifQ.vwKrOGZoZSj3N-9MB6FF_A';
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/outdoors-v9',
+            zoom: 11.5,
+            center: [13.4426, 52.5100],
+        });
+
+
+        //////////////////////////
+        // Mapbox+D3 Connection
+        //////////////////////////
+
+        // Get Mapbox map canvas container
+        var canvas = map.getCanvasContainer();
+
+        // Overlay d3 on the map
+        var svg = d3.select(canvas).append("svg");
+
+
+        // Load map and dataset
+        map.on('load', function () {
+            d3.json("data/berlin-parks.json", function(err, data) {
+                drawData(data);
+            });
+        });
+
+        // Project GeoJSON coordinate to the map's current state
+        function project(d) {
+            return map.project(new mapboxgl.LngLat(+d[0], +d[1]));
+        }
+
+
+        //////////////
+        // D3 stuff
+        //////////////
+
+        // Draw GeoJSON data with d3
+        var circles;
+        function drawData(data) {
+            console.log("draw data");
+
+            // Add circles
+            circles = svg.selectAll("circle")
+                .data(data.features)
+                .enter()
+                .append("circle")
+                    .attr("r", 16)
+                    .on("click", function(d) {
+                        alert(d.properties.name);
+                    });
+
+            // Call the update function
+            update();
+
+            // Update on map interaction
+            map.on("viewreset", function() { update(0); });
+            map.on("move", function() { update(0); });
+            map.on("moveend", function() { update(0); });
+        }
+
+        // Update function
+        function update(transitionTime) {
+
+            // Default value = 0
+            transitionTime = (typeof transitionTime !== 'undefined') ? transitionTime : 0;
+
+            // Map view
+            if (view === "map") {
+
+                svg.selectAll("circle")
+                    .transition()
+                    .duration(transitionTime)
+                       .attr("cx", function(d) { return project(d.geometry.coordinates).x })
+                       .attr("cy", function(d) { return project(d.geometry.coordinates).y });
+
+            // Grid view
+            } else if (view === "grid") {
+
+                var ix = 0,
+                    iy = 0,
+                    rows = 3,
+                    cols = 3;
+
+                // Check window with and height
+                var windowWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0),
+                    windowHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+
+                var gridItemWidth = (windowWidth*0.8)/(cols+1);
+                var gridItemHeight = (windowHeight)/(rows+1);
+
+                svg.selectAll("circle").each(function(d) {
+
+                    var circle = d3.select(this);
+
+                    console.log("ix: " + ix + ", iy: " + iy);
+
+                    circle
+                        .transition()
+                        .duration(transitionTime)
+                            .attr("cx", function(d) {
+                                return (windowWidth*0.2) + (ix*gridItemWidth) + (0.5*gridItemWidth);
+                            })
+                            .attr("cy", function(d) {
+                                return (iy*gridItemHeight) + gridItemHeight;
+                            });
+
+                    // Increase iterators
+                    ix++;
+                    if (ix === cols) { ix = 0; iy++; }
+                    if (iy === rows) { iy = 0; }
+                });
+            }
+        }
+
+        function setMapOpacity(value) {
+
+            d3.selectAll(".mapboxgl-canvas")
+                .transition()
+                .duration(500)
+                    .style("opacity", value);
+
+            d3.selectAll(".mapboxgl-control-container")
+                .transition()
+                .duration(500)
+                    .style("opacity", value);
+        }
+
+        function showMap() {
+            setMapOpacity(1);
+
+            // Enable map interaction
+            map.doubleClickZoom.enable();
+            map.scrollZoom.enable();
+            map.dragPan.enable();
+        }
+
+        function hideMap() {
+            setMapOpacity(0.1);
+
+            // Disable map interaction
+            map.doubleClickZoom.disable();
+            map.scrollZoom.disable();
+            map.dragPan.disable();
+        }
+
+
+        ////////////
+        // Toggle
+        ////////////
+
+        function toggleViews() {
+
+            // Toggle active view
+            if (view == "map") {
+                view = "grid";
+                hideMap();
+            } else if (view == "grid") {
+                view = "map";
+                showMap();
+            }
+
+            update(500);
+        }
+
+    </script>
+  </body>
+</html>

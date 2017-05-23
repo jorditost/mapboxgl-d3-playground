@@ -1,0 +1,52 @@
+<!DOCTYPE html >
+<html>
+  <head>
+      <meta charset='utf-8' />
+      <title>mapboxgl.js + d3.js tutorial - 01</title>
+      <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+      <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.21.0/mapbox-gl.js'></script>
+
+      <style media="screen">
+          body { margin:0; padding:0; }
+          #map { position:absolute; top:0; bottom:0; width:100%; }
+      </style>
+  </head>
+  <body>
+    <div id='map'>
+    </div>
+    <script>
+
+        // Set-up map
+    	mapboxgl.accessToken = 'pk.eyJ1Ijoiam9yZGl0b3N0IiwiYSI6ImQtcVkyclEifQ.vwKrOGZoZSj3N-9MB6FF_A';
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/outdoors-v9',
+            zoom: 11.5,
+            center: [13.4426, 52.5100],
+        });
+
+        // Map is loaded
+        map.on('load', function () {
+
+            // Add GeoJSON source from GeoJSON file
+            map.addSource("parks", {
+                "type": "geojson",
+                "data": "data/berlin-parks.json"
+            });
+
+            // Add circle layer
+            map.addLayer({
+                "id": "parks",
+                "type": "circle",
+                "source": "parks",
+                "paint": {
+                    "circle-color": "#e55e5e",
+                    "circle-radius": 16
+                }
+            });
+        });
+
+    </script>
+  </body>
+</html>
